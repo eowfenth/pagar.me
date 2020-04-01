@@ -1,0 +1,20 @@
+{
+  "name": "pagar.me",
+  "version": "1.0.0",
+  "description": "Implementation of last stable public api for Pagar.me gateway. Initially done purely with Javascript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eowfenth/pagar.me.git"
+  },
+  "keywords": [],
+  "author": "Nícolas 'Nícolas' Deçordi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eowfenth/pagar.me/issues"
+  },
+  "homepage": "https://github.com/eowfenth/pagar.me#readme"
+}
