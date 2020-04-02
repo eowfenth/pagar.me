@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/eowfenth/pagar.me/issues"
   },
-  "homepage": "https://github.com/eowfenth/pagar.me#readme"
+  "homepage": "https://github.com/eowfenth/pagar.me#readme",
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
 }
