@@ -49,8 +49,9 @@ const call = async (url, method, data) => {
         },
     };
 
+    let response = null;
     try {
-        const response = await axios.request(options);
+        response = await axios.request(options);
     } catch (err) {
         console.log(JSON.stringify(err));
     }
