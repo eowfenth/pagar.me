@@ -1,6 +1,6 @@
 {
   "name": "pagar.me",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Implementation of last stable public api for Pagar.me gateway. Initially done purely with Javascript.",
   "main": "index.js",
   "scripts": {
