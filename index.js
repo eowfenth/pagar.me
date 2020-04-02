@@ -35,7 +35,7 @@ const refund = async (id, value) => {
 };
 
 const call = async (url, method, data) => {
-    const api_key = "ak_test_UmTegBDBoqn6Bbmjahxb5OUR5k1hWq";
+    const api_key = "";
     const options = {
         baseURL: "https://api.pagar.me/1",
         url: url,
