@@ -1,43 +1,9 @@
 const axios = require("axios");
-
-const charge = async (card, value, capture = true) => {
-    const {
-        card_number,
-        card_holder_name,
-        card_expiration_date,
-        card_cvv
-    } = card;
-
-    const data = {
-        amount: value,
-        card_number,
-        card_holder_name,
-        card_expiration_date,
-        card_cvv,
-        capture,
-    };
-
-    return call("/transactions", 'post', data);
-};
-
-const capture = async (id, value) => {
-    const data = {
-        amount: value,
-    };
-    return call(`/transactions/${id}/capture`, 'post', data);
-};
-
-const refund = async (id, value) => {
-    const data = {
-        amount: value,
-    };
-    return call(`/transactions/${id}/refund`, 'post', data);
-};
+const config = require("./config");
 
 const call = async (url, method, data) => {
-    const api_key = "";
     const options = {
-        baseURL: "https://api.pagar.me/1",
+        baseURL: config.PAGARME_BASE_URL,
         url: url,
         method: method,
         headers: {
@@ -45,7 +11,7 @@ const call = async (url, method, data) => {
         },
         data: {
             ...data,
-            api_key,
+            api_key: config.API_KEY,
         },
     };
 
@@ -53,7 +19,23 @@ const call = async (url, method, data) => {
     try {
         response = await axios.request(options);
     } catch (err) {
-        console.log(JSON.stringify(err));
+        if (err.response) {
+            console.error(err.response.data);
+            const { status, statusText } = err.response;
+            return {
+                error: status,
+                data: {
+                    message: statusText,
+                },
+            };
+        }
+
+        return {
+            error: 502,
+            data: {
+                message: "Bad Gateway",
+            },
+        };
     }
 
     if (response.status !== 200) {
@@ -62,7 +44,7 @@ const call = async (url, method, data) => {
             data: {
                 message: response.message,
             },
-        }
+        };
     };
 
     return {
@@ -70,6 +52,18 @@ const call = async (url, method, data) => {
         error: null,
     };
 }
+
+const charge = async (card, value, capture = true) => {
+    return call("/transactions", 'post', { ...card, capture, amount: value });
+};
+
+const capture = async (id, value) => {
+    return call(`/transactions/${id}/capture`, 'post', { amount : value });
+};
+
+const refund = async (id, value) => {
+    return call(`/transactions/${id}/refund`, 'post', { amount: value });
+};
 
 module.exports = {
     capture, charge, refund,
