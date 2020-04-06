@@ -62,7 +62,7 @@ const postController = (req, res) => {
 
     req.on('end', async () => {
         if (!body) {
-            return errorController(req, res);
+            return errorController(req, res, 400, "Bad Request");
         }
 
         request = JSON.parse(body);
