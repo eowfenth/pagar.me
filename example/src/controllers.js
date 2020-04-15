@@ -43,36 +43,6 @@ const refund = async (req, res) => {
     res.status(status).json(response);
 };
 
-const postController = (req, res) => {
-    let body = "";
-    let request = null;
-        
-    req.on('data', (chunk) => {
-        console.log(chunk);
-        body += chunk;
-    });
-
-    req.on('end', async () => {
-        if (!body) {
-            return errorController(req, res, 400, "Bad Request");
-        }
-
-        request = JSON.parse(body);
-
-        switch (req.url) {
-            case "/charge":
-                return chargeController(req, res, request);
-            case "/capture":
-                return captureController(req, res, request);
-            case "/refund":
-                return refundController(req, res, request);
-            default:
-                return errorController(req, res);
-        }
-    });
-
-};
-
 const errorController = (req, res, status = 404, message = "Not Found") => {
     res.status(status).json({
         error: status,
