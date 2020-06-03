@@ -1,70 +1,88 @@
 const axios = require("axios");
 const config = require("./config");
 
-const call = async (url, method, data) => {
-    const options = {
+const client = (api_key) => {
+    if (!api_key) {
+        throw 'You need an api key!';
+    };
+
+    const pagarme_client = axios.create({
+        auth: {
+            username: api_key,
+            password: 'x',
+        },
         baseURL: config.PAGARME_BASE_URL,
-        url: url,
-        method: method,
         headers: {
             'Content-Type': 'application/json',
         },
-        data: {
-            ...data,
-            api_key: config.API_KEY,
-        },
-    };
+    });
 
-    let response = null;
-    try {
-        response = await axios.request(options);
-    } catch (err) {
-        if (err.response) {
-            console.error(err.response.data);
-            const { status, statusText } = err.response;
+    const call = async (url, method, data) => {
+        const options = {
+            url,
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data,
+        };
+    
+        let response = null;
+        try {
+            response = await pagarme_client.request(options);
+        } catch (err) {
+            if (err.response) {
+                console.error(err.response.data);
+                const { status, statusText } = err.response;
+                return {
+                    error: status,
+                    data: {
+                        message: statusText,
+                    },
+                };
+            }
+    
             return {
-                error: status,
+                error: 502,
                 data: {
-                    message: statusText,
+                    message: "Bad Gateway",
                 },
             };
         }
-
+    
+        if (response.status !== 200) {
+            return {
+                error: response.status,
+                data: {
+                    message: response.message,
+                },
+            };
+        };
+    
         return {
-            error: 502,
-            data: {
-                message: "Bad Gateway",
-            },
+            data: response.data,
+            error: null,
         };
     }
 
-    if (response.status !== 200) {
-        return {
-            error: response.status,
-            data: {
-                message: response.message,
-            },
-        };
+    const charge = async (card, value, capture = true) => {
+        return call("/transactions", 'post', { ...card, capture, amount: value });
+    };
+    
+    const capture = async (id, value) => {
+        return call(`/transactions/${id}/capture`, 'post', { amount : value });
+    };
+    
+    const refund = async (id, value) => {
+        return call(`/transactions/${id}/refund`, 'post', { amount: value });
     };
 
+    
     return {
-        data: response.data,
-        error: null,
+        charge,
+        refund,
+        capture,
     };
-}
-
-const charge = async (card, value, capture = true) => {
-    return call("/transactions", 'post', { ...card, capture, amount: value });
 };
 
-const capture = async (id, value) => {
-    return call(`/transactions/${id}/capture`, 'post', { amount : value });
-};
-
-const refund = async (id, value) => {
-    return call(`/transactions/${id}/refund`, 'post', { amount: value });
-};
-
-module.exports = {
-    capture, charge, refund,
-};
+module.exports = client;
